@@ -35,6 +35,9 @@ import { AngularFireModule } from '@angular/fire';
 import { environment } from 'src/environments/environment';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { ServiceWorkerModule } from '@angular/service-worker';
+import { HttpClientModule } from '@angular/common/http';
+import { CommonModule } from '@angular/common';
+// import { EchartsNg2Module } from 'echarts-ng2';
 
 @NgModule({
   declarations: [AppComponent, TaskComponent, TaskDialogComponent],
@@ -58,6 +61,9 @@ import { ServiceWorkerModule } from '@angular/service-worker';
       // or after 30 seconds (whichever comes first).
       registrationStrategy: 'registerWhenStable:30000'
     }),
+    HttpClientModule,
+    CommonModule,
+    
   ],
   providers: [
     AngularFirestore,
