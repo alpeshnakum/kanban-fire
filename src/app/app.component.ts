@@ -13,6 +13,7 @@ import {
 import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
 
+let deferredPrompt: any;
 
 const getObservable = (collection: AngularFirestoreCollection<Task>) => {
   const subject = new BehaviorSubject<Task[]>([]);
@@ -104,6 +105,20 @@ export class AppComponent {
   chartOptions = {};
 
   ngOnInit() {
+
+    window.addEventListener("beforeinstallprompt", (e) => {
+      // Prevent the mini-infobar from appearing on mobile
+      e.preventDefault();
+      // Stash the event so it can be triggered later.
+      deferredPrompt = e;
+      // Update UI notify the user they can install the PWA
+      this.setInstallable = true;
+    });
+    window.addEventListener('appinstalled', () => {
+      // Log install to analytics
+      console.log('INSTALL: Success');
+    });
+    
     const templateString = `<h1>Hello {{name}}!</h1>`;
     
     this.isIos_hide_button_chIOS = /CriOS/i.test(navigator.userAgent);
@@ -210,5 +225,35 @@ export class AppComponent {
     const userAgent = window.navigator.userAgent.toLowerCase();
     return /iphone|ipad|ipod/.test(userAgent);
   }
+
+  setInstallable: boolean = false;
+  openPWA() {
+    this.setInstallable = false;
+    // Show the install prompt
+    deferredPrompt.prompt();
+    // Wait for the user to respond to the prompt
+    deferredPrompt.userChoice.then((choiceResult: any) => {
+      if (choiceResult.outcome === 'accepted') {
+        console.log('User accepted the install prompt');
+      } else {
+        console.log('User dismissed the install prompt');
+      }
+    });
+  }
+
+  
+
+  // makeApiCall() {
+  //   this.http.get("https://discussion4all.com/digitalcircular/createpwa.php?endpoint=testing").subscribe(
+  //     (response) => {
+  //       console.log(response);
+  //       // Handle the API response here
+  //     },
+  //     (error) => {
+  //       console.error(error);
+  //       // Handle any errors here
+  //     }
+  //   );
+  // }
 
 }
